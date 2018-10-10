@@ -2,6 +2,7 @@
 
 import socket
 import sys
+import struct
 
 ip = "18.219.51.6"
 port = 4711
@@ -17,3 +18,19 @@ print("socket created")
 s.connect ((ip, port))
 print("connected to ip:port")
 
+person = input('enter your name:')
+print ('hello', person)
+
+message = input("Enter your message:")
+
+
+def rawbytes(message):
+	outputlist = []
+	for cp in message:
+		num = ord(cp)
+		if num <= 255:
+			outputlist.append(struct.pack('q', num))
+		else:
+			print("It is more than 255 characters")
+	return outputlist;
+rawbytes(message) 
