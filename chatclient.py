@@ -1,36 +1,29 @@
 #!/usr/bin/env python3
-
 import socket
+import select
 import sys
-import struct
 
-ip = "18.219.51.6"
-port = 4711
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+if len(sys.argv) != 3:
+    print ("Correct usage: script, IP address, port number")
+    exit()
+IP_address = str(sys.argv[1])
+Port = int(sys.argv[2])
+client_socket.connect((IP_address, Port))
+msg = input("NICK:")
 
-
-try:
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-except socket.error:
-	print("fail to connect")
-	sys.exit();
-print("socket created")
-
-s.connect ((ip, port))
-print("connected to ip:port")
-
-person = input('enter your name:')
-print ('hello', person)
-
-message = input("Enter your message:")
-
-
-def rawbytes(message):
-	outputlist = []
-	for cp in message:
-		num = ord(cp)
-		if num <= 255:
-			outputlist.append(struct.pack('q', num))
-		else:
-			print("It is more than 255 characters")
-	return outputlist;
-rawbytes(message) 
+while True:
+    sockets_list = [sys.stdin, client_socket]
+    read_sockets,write_sockets,error_sockets= select.select(sockets_list, [], [])
+    for socks in read_sockets:
+        if socks == client_socket:
+            message = socks.recv(2048)
+            print ("MSG")
+        else:
+            message = sys.stdin.readline()
+            client_socket.send(message)
+            sys.stdout.write("<You>")
+            sys.stdout.write(message)
+            sys.stdout.flush()
+server.close()
+    
